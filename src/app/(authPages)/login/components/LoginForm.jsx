@@ -1,16 +1,27 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { IoArrowForwardCircleOutline } from "react-icons/io5";
 import SocialLogin from "../../components/SocialLogin";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/slices/userSlice";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { data: session } = useSession();
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Sync session with Redux after login
+  useEffect(() => {
+    if (session?.user) {
+      dispatch(setUser(session.user));
+    }
+  }, [session, dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +43,7 @@ export default function LoginForm() {
 
       if (response?.ok) {
         toast.success("Logged in successfully!");
+        // Session will be synced to Redux via useEffect
         router.push("/");
         form.reset();
       } else {

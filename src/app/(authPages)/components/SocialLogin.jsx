@@ -4,20 +4,32 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { FaGoogle } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/store/slices/userSlice";
 
 export default function SocialLogin() {
   const router = useRouter();
-  const session = useSession();
+  const { data: session, status } = useSession();
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.user);
 
   const handleSocialLogin = (providerName) => {
     signIn(providerName, { callbackUrl: "/" });
   };
 
+  // Sync session with Redux
   useEffect(() => {
-    if (session?.status === "authenticated") {
+    if (session?.user) {
+      dispatch(setUser(session.user));
+    }
+  }, [session, dispatch]);
+
+  // Redirect if authenticated
+  useEffect(() => {
+    if (status === "authenticated" && isAuthenticated) {
       router.push("/");
     }
-  }, [session?.status, router]);
+  }, [status, isAuthenticated, router]);
 
   return (
     <div className="w-full">
