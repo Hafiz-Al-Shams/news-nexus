@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 import Link from "next/link";
 import { IoArrowForwardCircleOutline } from "react-icons/io5";
 import SocialLogin from "../../components/SocialLogin";
@@ -46,10 +47,15 @@ export default function RegisterForm() {
       toast.dismiss();
 
       if (response.ok) {
-        toast.success("Registration successful!");
         form.reset();
-        router.push("/login");
-        toast("Now please login");
+        Swal.fire({
+          title: "Registration successful!",
+          text: "Now please Login to Continue",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          router.push("/login");
+        });
       } else {
         toast.error(data.message || "Registration failed");
       }
