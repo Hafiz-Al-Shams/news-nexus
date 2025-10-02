@@ -82,7 +82,7 @@ export default function NewsSection() {
           Latest News
         </h1>
         <p className="text-gray-600">
-          Stay updated with the latest news from around the world
+          AI-powered Smart News Summaries for Busy Minds
         </p>
       </div>
 

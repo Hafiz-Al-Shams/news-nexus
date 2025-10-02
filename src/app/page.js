@@ -7,12 +7,25 @@ import { setUser, logout as reduxLogout } from "@/store/slices/userSlice";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import NewsSection from "@/components/NewsSection";
+import Swal from "sweetalert2";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Show development alert on first load
+  useEffect(() => {
+    Swal.fire({
+      title: "Still Under Raw Development",
+      text: "This website is currently under development. Some features may not work as expected.",
+      icon: "info",
+      confirmButtonText: "View Anyway",
+      confirmButtonColor: "#2563eb",
+      allowOutsideClick: false,
+    });
+  }, []);
 
   // Sync NextAuth session with Redux store
   useEffect(() => {
@@ -147,9 +160,7 @@ export default function Home() {
                 Welcome to NewsNexus
               </h2>
               <p className="text-xl text-gray-600 mb-8">
-                Your gateway to the latest news from around the world. Stay
-                informed with real-time updates across multiple categories and
-                regions.
+                An AI-powered web-application for aggregating and summarizing current world news using AI, with customizable filters for time, region, and type.
               </p>
 
               {/* CTA Buttons */}
@@ -205,6 +216,48 @@ export default function Home() {
         )}
       </main>
 
+      {/* Floating AI Chat Button */}
+      <Link
+        href="/chat-with-ai"
+        className="fixed bottom-6 right-6 z-50 group"
+        aria-label="Chat with AI"
+      >
+        <div className="relative">
+          {/* Pulse animation ring */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full animate-ping opacity-75"></div>
+
+          {/* Main button */}
+          <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-110 active:scale-95">
+            {/* Chat icon */}
+            <svg
+              className="w-7 h-7"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+              />
+            </svg>
+
+            {/* Notification dot */}
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></span>
+          </div>
+
+          {/* Tooltip */}
+          <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <div className="bg-gray-900 text-white text-sm py-2 px-4 rounded-lg whitespace-nowrap shadow-lg">
+              Chat with AI
+              <div className="absolute top-full right-6 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900"></div>
+            </div>
+          </div>
+        </div>
+      </Link>
+
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16">
         <div className="container mx-auto px-4 py-6">
@@ -226,3 +279,4 @@ export default function Home() {
     </div>
   );
 }
+

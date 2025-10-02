@@ -38,7 +38,7 @@ export default function SocialLogin() {
         type="button"
         className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
       >
-        <FaGoogle className="w-5 h-5 text-red-500" />
+        <FaGoogle className="w-5 h-5" />
         <span className="text-gray-700 font-medium">Continue with Google</span>
       </button>
     </div>

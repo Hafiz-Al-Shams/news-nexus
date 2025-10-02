@@ -115,7 +115,7 @@ export default function LoginForm() {
           <div className="w-full border-t border-gray-300"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          <span className="px-2 bg-white text-gray-500">Or</span>
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export default function LoginForm() {
           className="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"
         >
           <IoArrowForwardCircleOutline className="mr-1 w-5 h-5" />
-          Go Home
+          Go back Home
         </Link>
       </div>
     </div>
