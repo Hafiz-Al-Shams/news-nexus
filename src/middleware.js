@@ -6,11 +6,10 @@ export async function middleware(request) {
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
   });
-
   const isLoggedIn = !!token;
 
-  // Protected routes
-  const protectedRoutes = ["/user-dashboard"];
+  // Protected routes (currently empty, add routes here as needed in the future)
+  const protectedRoutes = [];
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
@@ -22,14 +21,14 @@ export async function middleware(request) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redirect to dashboard if accessing login/register while already logged in
-  const authRoutes = ["/login", "/register"];
+  // Redirect to home if accessing login/signup while already logged in
+  const authRoutes = ["/login", "/signup"];
   const isAuthRoute = authRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
   if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/user-dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
@@ -37,9 +36,9 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    "/user-dashboard/:path*",
     "/login",
-    "/register",
-    // Add more protected routes here as needed
+    "/signup",
+    // Add more protected routes here as needed in the future
+    // Example: "/user-dashboard/:path*",
   ],
 };

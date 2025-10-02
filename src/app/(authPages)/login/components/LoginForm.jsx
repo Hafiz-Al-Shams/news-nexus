@@ -106,15 +106,7 @@ export default function LoginForm() {
           {isLoading ? "Logging in..." : "Login"}
         </button>
 
-        {/* Forgot Password */}
-        <div className="text-center mb-6">
-          <Link
-            href="/reset-password"
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
-            Forgot Password?
-          </Link>
-        </div>
+       
       </form>
 
       {/* Divider */}
@@ -142,7 +134,7 @@ export default function LoginForm() {
           className="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"
         >
           <IoArrowForwardCircleOutline className="mr-1 w-5 h-5" />
-          Go Back
+          Go Home
         </Link>
       </div>
     </div>
