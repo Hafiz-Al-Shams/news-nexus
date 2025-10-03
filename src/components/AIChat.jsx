@@ -94,6 +94,7 @@ export default function AIChat() {
       e.preventDefault();
       sendMessage();
     }
+    // Shift+Enter will naturally create new lines in textarea
   };
 
   const clearChat = () => {
@@ -182,21 +183,30 @@ export default function AIChat() {
       {/* Input Area */}
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-3">
         <div className="flex gap-2">
-          <input
+          <textarea
             ref={inputRef}
-            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="Ask me anything..."
             disabled={loading}
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+            rows={1}
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 resize-none overflow-hidden"
+            style={{
+              minHeight: '48px',
+              maxHeight: '200px',
+            }}
+            onInput={(e) => {
+              // Auto-resize textarea based on content
+              e.target.style.height = 'auto';
+              e.target.style.height = e.target.scrollHeight + 'px';
+            }}
             autoFocus
           />
           <button
             onClick={sendMessage}
             disabled={loading || !input.trim()}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium self-end"
           >
             {loading ? (
               <span className="flex items-center">
@@ -212,7 +222,7 @@ export default function AIChat() {
           </button>
         </div>
         <p className="text-xs text-gray-400 mt-2 px-1">
-          Press Enter to send • Shift + Enter for new line
+          Press Enter to send • Shift+Enter for new line
         </p>
       </div>
     </div>
