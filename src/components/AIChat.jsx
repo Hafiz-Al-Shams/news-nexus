@@ -24,7 +24,7 @@ export default function AIChat() {
 
     const userMessage = { role: "user", content: input.trim() };
     const currentInput = input.trim();
-    
+
     // Update UI immediately
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -59,7 +59,7 @@ export default function AIChat() {
           ...prev,
           { role: "assistant", content: data.response },
         ]);
-        
+
         // Show success toast (optional)
         // toast.success("Response received!");
       } else {
@@ -67,10 +67,10 @@ export default function AIChat() {
       }
     } catch (error) {
       console.error("Chat error:", error);
-      
+
       // Remove the user message if request failed
       setMessages((prev) => prev.slice(0, -1));
-      
+
       // Show specific error message
       if (error.message.includes("Unauthorized")) {
         toast.error("Please login to use AI chat");
@@ -79,7 +79,7 @@ export default function AIChat() {
       } else {
         toast.error(error.message || "Failed to get AI response");
       }
-      
+
       // Restore the input
       setInput(currentInput);
     } finally {
@@ -98,7 +98,7 @@ export default function AIChat() {
 
   const clearChat = () => {
     if (messages.length === 0) return;
-    
+
     if (confirm("Are you sure you want to clear the chat history?")) {
       setMessages([]);
       toast.success("Chat cleared");
@@ -130,7 +130,6 @@ export default function AIChat() {
         <div className="p-4 space-y-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="text-6xl mb-4">🤖</div>
               <p className="text-gray-500 text-lg font-medium">
                 Start a conversation with AI
               </p>
@@ -143,16 +142,14 @@ export default function AIChat() {
               {messages.map((msg, index) => (
                 <div
                   key={index}
-                  className={`flex ${
-                    msg.role === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                    }`}
                 >
                   <div
-                    className={`max-w-[80%] px-4 py-3 rounded-2xl ${
-                      msg.role === "user"
-                        ? "bg-blue-600 text-white rounded-br-sm"
-                        : "bg-gray-100 text-gray-800 rounded-bl-sm"
-                    }`}
+                    className={`max-w-[80%] px-4 py-3 rounded-2xl ${msg.role === "user"
+                      ? "bg-blue-600 text-white rounded-br-sm"
+                      : "bg-gray-100 text-gray-800 rounded-bl-sm"
+                      }`}
                   >
                     <div className="whitespace-pre-wrap break-words">
                       {msg.content}
@@ -160,7 +157,7 @@ export default function AIChat() {
                   </div>
                 </div>
               ))}
-              
+
               {loading && (
                 <div className="flex justify-start">
                   <div className="bg-gray-100 text-gray-600 px-4 py-3 rounded-2xl rounded-bl-sm">
@@ -175,7 +172,7 @@ export default function AIChat() {
                   </div>
                 </div>
               )}
-              
+
               <div ref={messagesEndRef} />
             </>
           )}

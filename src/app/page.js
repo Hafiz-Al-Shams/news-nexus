@@ -219,7 +219,7 @@ export default function Home() {
       {/* Floating AI Chat Button */}
       <Link
         href="/chat-with-ai"
-        className="fixed bottom-6 right-6 z-50 group"
+        className="fixed bottom-10 lg:bottom-24 right-6 z-50 group"
         aria-label="Chat with AI"
       >
         <div className="relative">
@@ -263,15 +263,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6">
           <div className="text-center text-sm text-gray-600">
             <p>
-              © 2025 NewsNexus. Powered by{" "}
-              <a
-                href="https://newsapi.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                NewsAPI
-              </a>
+              © 2025 NewsNexus
             </p>
           </div>
         </div>
