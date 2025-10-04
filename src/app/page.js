@@ -223,8 +223,17 @@ export default function Home() {
         aria-label="Chat with AI"
       >
         <div className="relative">
+
           {/* Pulse animation ring */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full animate-ping opacity-75"></div>
+
+          {/* original normal pulse from claude */}
+          {/* <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full animate-ping opacity-75"></div> */}
+
+          {/* custom pulse from gpt */}
+          {/* <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 animate-[ping_2s_ease-in-out_infinite] opacity-75"></div> */}
+
+          {/* custom pulse from grok */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-75"></div>
 
           {/* Main button */}
           <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-110 active:scale-95">
