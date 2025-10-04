@@ -12,13 +12,23 @@ const initialState = {
   guardianLoading: false,
   guardianError: null,
   
+  // 24hrs Bulletin data
+  bulletin: {
+    bullets: [],
+    detailedCards: [],
+    loading: false,
+    error: null,
+    lastFetched: null,
+    cachedAt: null,
+  },
+  
   // Combined view
   combinedArticles: [],
   
   // Filters
   filters: {
-    time: "24h",    // 1h, 24h, 3d, 7d
-    topic: "all",   // all, politics, business, technology, environment, sport, health, science, education, books, travel
+    time: "24h",
+    topic: "all",
   },
   
   // Active news source
@@ -27,6 +37,48 @@ const initialState = {
   lastFetched: null,
   guardianLastFetched: null,
 };
+
+// Fetch 24hrs bulletin (bullets only)
+export const fetch24hrsBulletin = createAsyncThunk(
+  'news/fetch24hrsBulletin',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/bulletins/24hrs');
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return rejectWithValue(data);
+      }
+      
+      return data;
+    } catch (error) {
+      return rejectWithValue({ error: error.message });
+    }
+  }
+);
+
+// Expand bulletin into detailed cards
+export const expandBulletinDetails = createAsyncThunk(
+  'news/expandBulletinDetails',
+  async (bullets, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/bulletins/expand', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bullets })
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return rejectWithValue(data);
+      }
+      
+      return data;
+    } catch (error) {
+      return rejectWithValue({ error: error.message });
+    }
+  }
+);
 
 // Async thunk for fetching NewsAPI articles
 export const fetchNewsAPIArticles = createAsyncThunk(
@@ -76,71 +128,39 @@ export const fetchGuardianArticles = createAsyncThunk(
   }
 );
 
-// Async thunk for fetching both sources
-export const fetchCombinedArticles = createAsyncThunk(
-  'news/fetchCombined',
-  async (filters, { dispatch }) => {
-    const [newsAPIResult, guardianResult] = await Promise.allSettled([
-      dispatch(fetchNewsAPIArticles(filters)).unwrap(),
-      dispatch(fetchGuardianArticles(filters)).unwrap()
-    ]);
-    
-    return {
-      newsAPI: newsAPIResult.status === 'fulfilled' ? newsAPIResult.value : null,
-      guardian: guardianResult.status === 'fulfilled' ? guardianResult.value : null
-    };
-  }
-);
-
 const newsSlice = createSlice({
   name: "news",
   initialState,
   reducers: {
-    // Set loading state
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
-
-    // Set articles (NewsAPI)
     setArticles: (state, action) => {
       state.articles = action.payload;
       state.lastFetched = new Date().toISOString();
       state.error = null;
     },
-    
-    // Set Guardian articles
     setGuardianArticles: (state, action) => {
       state.guardianArticles = action.payload;
       state.guardianLastFetched = new Date().toISOString();
       state.guardianError = null;
     },
-
-    // Set error
     setError: (state, action) => {
       state.error = action.payload;
       state.loading = false;
     },
-    
-    // Set Guardian error
     setGuardianError: (state, action) => {
       state.guardianError = action.payload;
       state.guardianLoading = false;
     },
-
-    // Update filters
     setTimeFilter: (state, action) => {
       state.filters.time = action.payload;
     },
-
     setTopicFilter: (state, action) => {
       state.filters.topic = action.payload;
     },
-    
-    // Set active source
     setActiveSource: (state, action) => {
       state.activeSource = action.payload;
-      
-      // Update combined articles based on active source
       if (action.payload === 'combined') {
         state.combinedArticles = [
           ...state.articles,
@@ -148,8 +168,6 @@ const newsSlice = createSlice({
         ].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
       }
     },
-
-    // Clear news
     clearNews: (state) => {
       state.articles = [];
       state.guardianArticles = [];
@@ -158,6 +176,16 @@ const newsSlice = createSlice({
       state.guardianError = null;
       state.lastFetched = null;
       state.guardianLastFetched = null;
+    },
+    clearBulletin: (state) => {
+      state.bulletin = {
+        bullets: [],
+        detailedCards: [],
+        loading: false,
+        error: null,
+        lastFetched: null,
+        cachedAt: null,
+      };
     },
   },
   
@@ -196,34 +224,38 @@ const newsSlice = createSlice({
         state.guardianError = action.payload?.message || 'Failed to fetch Guardian articles';
       });
     
-    // Combined reducers
+    // 24hrs Bulletin reducers
     builder
-      .addCase(fetchCombinedArticles.pending, (state) => {
-        state.loading = true;
-        state.guardianLoading = true;
+      .addCase(fetch24hrsBulletin.pending, (state) => {
+        state.bulletin.loading = true;
+        state.bulletin.error = null;
       })
-      .addCase(fetchCombinedArticles.fulfilled, (state, action) => {
-        state.loading = false;
-        state.guardianLoading = false;
-        
-        const { newsAPI, guardian } = action.payload;
-        
-        if (newsAPI) {
-          state.articles = newsAPI.articles || [];
-        }
-        if (guardian) {
-          state.guardianArticles = guardian.articles || [];
-        }
-        
-        // Combine and sort articles
-        state.combinedArticles = [
-          ...state.articles,
-          ...state.guardianArticles
-        ].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+      .addCase(fetch24hrsBulletin.fulfilled, (state, action) => {
+        state.bulletin.loading = false;
+        state.bulletin.bullets = action.payload.bullets || [];
+        state.bulletin.lastFetched = new Date().toISOString();
+        state.bulletin.cachedAt = action.payload.cachedAt;
+        state.bulletin.error = null;
       })
-      .addCase(fetchCombinedArticles.rejected, (state) => {
-        state.loading = false;
-        state.guardianLoading = false;
+      .addCase(fetch24hrsBulletin.rejected, (state, action) => {
+        state.bulletin.loading = false;
+        state.bulletin.error = action.payload?.message || 'Failed to fetch bulletin';
+      });
+    
+    // Bulletin detail expansion reducers
+    builder
+      .addCase(expandBulletinDetails.pending, (state) => {
+        state.bulletin.loading = true;
+        state.bulletin.error = null;
+      })
+      .addCase(expandBulletinDetails.fulfilled, (state, action) => {
+        state.bulletin.loading = false;
+        state.bulletin.detailedCards = action.payload.cards || [];
+        state.bulletin.error = null;
+      })
+      .addCase(expandBulletinDetails.rejected, (state, action) => {
+        state.bulletin.loading = false;
+        state.bulletin.error = action.payload?.message || 'Failed to expand details';
       });
   }
 });
@@ -238,6 +270,7 @@ export const {
   setTopicFilter,
   setActiveSource,
   clearNews,
+  clearBulletin,
 } = newsSlice.actions;
 
 export default newsSlice.reducer;

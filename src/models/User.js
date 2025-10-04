@@ -19,6 +19,15 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "credentials", // or "google"
     },
+    // NEW: Daily limits tracking
+    dailyLimits: {
+      type: Map,
+      of: {
+        bulletinExpansions: { type: Number, default: 0 },
+        articleSummaries: { type: Number, default: 0 }
+      },
+      default: {}
+    }
   },
   { timestamps: true }
 );

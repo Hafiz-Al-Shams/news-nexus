@@ -19,6 +19,12 @@ const ReviewSchema = new mongoose.Schema({
   articleUrl: {
     type: String,
   },
+  // NEW: Review type to differentiate between article summaries and bulletin details
+  reviewType: {
+    type: String,
+    enum: ['article_summary', 'bulletin_details', 'general'],
+    default: 'article_summary'
+  },
   createdAt: {
     type: Date,
     default: Date.now,

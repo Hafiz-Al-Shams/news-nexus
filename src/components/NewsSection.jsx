@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 import {
   fetchNewsAPIArticles,
   fetchGuardianArticles,
@@ -12,6 +13,7 @@ import NewsCard from "./NewsCard";
 import toast from "react-hot-toast";
 
 export default function NewsSection() {
+  const router = useRouter();
   const dispatch = useDispatch();
   const { 
     articles, 
@@ -26,6 +28,11 @@ export default function NewsSection() {
   
   const [hasFetchedNewsAPI, setHasFetchedNewsAPI] = useState(false);
   const [hasFetchedGuardian, setHasFetchedGuardian] = useState(false);
+
+  // Navigate to bulletin page
+  const handleBulletinClick = () => {
+    router.push('/bulletins/24hrs');
+  };
 
   // Fetch NewsAPI articles
   const fetchNewsAPINews = async () => {
@@ -79,7 +86,6 @@ export default function NewsSection() {
     }
   };
 
-  // Get current articles based on active source
   const getCurrentArticles = () => {
     if (activeSource === 'guardian') return guardianArticles;
     return articles;
@@ -120,16 +126,42 @@ export default function NewsSection() {
         onTopicChange={(topic) => dispatch({ type: 'news/setTopicFilter', payload: topic })}
       />
 
-      {/* Dual Fetch Buttons */}
-      <div className="flex flex-col sm:flex-row justify-center gap-4 py-8">
-        {/* NewsAPI Button - DISABLED */}
-        {false && (
+      {/* Action Buttons Section */}
+      <div className="space-y-4">
+        {/* 24hrs Bulletin Button - Featured */}
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <h3 className="text-xl font-bold text-gray-800 mb-2 flex items-center justify-center sm:justify-start gap-2">
+                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                AI-Generated 24hrs News Bulletin
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Get the top 12 most important news stories from the past 24 hours, prioritized and summarized by AI
+              </p>
+            </div>
+            <button
+              onClick={handleBulletinClick}
+              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl font-semibold text-lg flex items-center justify-center gap-3 whitespace-nowrap"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+              </svg>
+              View Bulletin
+            </button>
+          </div>
+        </div>
+
+        {/* Regular News Fetch Button */}
+        <div className="flex justify-center">
           <button
-            onClick={fetchNewsAPINews}
-            disabled={loading}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl font-semibold text-lg flex items-center justify-center gap-3 min-w-[240px]"
+            onClick={fetchGuardianNews}
+            disabled={guardianLoading}
+            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl font-semibold text-lg flex items-center justify-center gap-3 min-w-[240px]"
           >
-            {loading ? (
+            {guardianLoading ? (
               <>
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 Loading...
@@ -137,34 +169,13 @@ export default function NewsSection() {
             ) : (
               <>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Get News from NewsAPI
+                Get The News
               </>
             )}
           </button>
-        )}
-
-        {/* Guardian Button */}
-        <button
-          onClick={fetchGuardianNews}
-          disabled={guardianLoading}
-          className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl font-semibold text-lg flex items-center justify-center gap-3 min-w-[240px]"
-        >
-          {guardianLoading ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Loading...
-            </>
-          ) : (
-            <>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Get The News
-            </>
-          )}
-        </button>
+        </div>
       </div>
 
       {/* Active Source Indicator */}

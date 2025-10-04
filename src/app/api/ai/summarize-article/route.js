@@ -14,7 +14,7 @@ const SummarySchema = new mongoose.Schema({
   title: String,
   content: String,
   createdAt: { type: Date, default: Date.now },
-  expiresAt: { type: Date, required: true, index: true },
+  expiresAt: { type: Date, required: true }, // REMOVED: index: true
 });
 
 // TTL index - auto-delete after 12 hours
@@ -43,52 +43,52 @@ async function ensureDb() {
 // Check rate limits
 async function checkRateLimit(userEmail) {
   const now = new Date();
-  
+
   let rateLimit = await RateLimit.findOne({ userEmail });
-  
+
   if (!rateLimit) {
-    const tomorrow = new Date(now); // FIXED: Create a copy
-    tomorrow.setHours(24, 0, 0, 0); // Mutate the copy, not 'now'
-    
+    const tomorrow = new Date(now);
+    tomorrow.setHours(24, 0, 0, 0);
+
     rateLimit = await RateLimit.create({
       userEmail,
       count: 0,
-      resetAt: new Date(now.getTime() + 60 * 60 * 1000), // 1 hour from actual now
+      resetAt: new Date(now.getTime() + 60 * 60 * 1000),
       dailyCount: 0,
-      dailyResetAt: tomorrow, // Use the copy
+      dailyResetAt: tomorrow,
     });
   }
-  
+
   // Reset hourly counter if expired
   if (now > rateLimit.resetAt) {
     rateLimit.count = 0;
     rateLimit.resetAt = new Date(now.getTime() + 60 * 60 * 1000);
   }
-  
+
   // Reset daily counter if expired
   if (now > rateLimit.dailyResetAt) {
-    const tomorrow = new Date(now); // FIXED: Create a copy
+    const tomorrow = new Date(now);
     tomorrow.setHours(24, 0, 0, 0);
-    
+
     rateLimit.dailyCount = 0;
-    rateLimit.dailyResetAt = tomorrow; // Use the copy
+    rateLimit.dailyResetAt = tomorrow;
   }
-  
+
   // Check limits
   if (rateLimit.count >= 10) {
     const minutesLeft = Math.ceil((rateLimit.resetAt - now) / 1000 / 60);
     throw new Error(`Hourly limit reached (10/hour). Try again in ${minutesLeft} minutes.`);
   }
-  
+
   if (rateLimit.dailyCount >= 100) {
     throw new Error(`Daily limit reached (100/day). Try again tomorrow.`);
   }
-  
+
   // Increment counters
   rateLimit.count += 1;
   rateLimit.dailyCount += 1;
   await rateLimit.save();
-  
+
   return {
     hourlyRemaining: 10 - rateLimit.count,
     dailyRemaining: 100 - rateLimit.dailyCount,
@@ -108,10 +108,10 @@ export async function POST(request) {
     }
 
     const userEmail = session.user.email;
-    
+
     // Connect to MongoDB
     await ensureDb();
-    
+
     // Check rate limits
     const rateLimitInfo = await checkRateLimit(userEmail);
 
@@ -125,8 +125,8 @@ export async function POST(request) {
       );
     }
 
-    console.log(`📰 Summarizing article for: ${userEmail}`);
-    console.log(`🔗 URL: ${url}`);
+    console.log(`Summarizing article for: ${userEmail}`);
+    console.log(`URL: ${url}`);
 
     // Check cache first
     const cached = await ArticleSummary.findOne({
@@ -135,7 +135,7 @@ export async function POST(request) {
     });
 
     if (cached) {
-      console.log("✅ Returning cached summary");
+      console.log("Returning cached summary");
       return NextResponse.json({
         success: true,
         summary: {
@@ -149,7 +149,7 @@ export async function POST(request) {
 
     // Generate new summary with Gemini
     console.log("Generating new summary with Gemini...");
-    
+
     const prompt = `You are a professional news summarizer. Summarize the following news article concisely.
 
 Article Title: ${title}
@@ -173,16 +173,16 @@ Focus on the most important facts. Be clear and direct.`;
         }
       ],
     });
-    
+
     // Extract response text using correct pattern
     const responseText = response.candidates?.[0]?.content?.parts?.[0]?.text;
-    
+
     if (!responseText) {
       throw new Error("No valid response from AI");
     }
-    
-    console.log("📝 Raw Gemini response:", responseText);
-    
+
+    console.log("Raw Gemini response:", responseText);
+
     // Parse JSON response
     let summary;
     try {
@@ -190,7 +190,7 @@ Focus on the most important facts. Be clear and direct.`;
       const cleanText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       summary = JSON.parse(cleanText);
     } catch (parseError) {
-      console.error("❌ Failed to parse Gemini response:", parseError);
+      console.error("Failed to parse Gemini response:", parseError);
       throw new Error("Failed to parse AI response");
     }
 
@@ -200,7 +200,7 @@ Focus on the most important facts. Be clear and direct.`;
 
     // Cache the summary (12 hours)
     const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000);
-    
+
     await ArticleSummary.create({
       articleUrl: url,
       title: summary.title,
@@ -208,7 +208,7 @@ Focus on the most important facts. Be clear and direct.`;
       expiresAt,
     });
 
-    console.log("✅ Summary generated and cached");
+    console.log("Summary generated and cached");
 
     return NextResponse.json({
       success: true,
@@ -218,7 +218,7 @@ Focus on the most important facts. Be clear and direct.`;
     });
 
   } catch (error) {
-    console.error("❌ Summarization error:", error);
+    console.error("Summarization error:", error);
 
     let errorMessage = error.message || "Failed to generate summary";
     let statusCode = 500;
