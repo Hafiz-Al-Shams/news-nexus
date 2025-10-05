@@ -14,7 +14,7 @@ const SummarySchema = new mongoose.Schema({
   title: String,
   content: String,
   createdAt: { type: Date, default: Date.now },
-  expiresAt: { type: Date, required: true }, // REMOVED: index: true
+  expiresAt: { type: Date, required: true },
 });
 
 // TTL index - auto-delete after 12 hours
@@ -38,6 +38,22 @@ async function ensureDb() {
   if (mongoose.connection.readyState === 0) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
+}
+
+// Sanitize JSON string - fix smart quotes and other problematic characters
+function sanitizeJsonString(str) {
+  return str
+    // Remove markdown code blocks
+    .replace(/```json\n?/g, '')
+    .replace(/```\n?/g, '')
+    // Replace smart quotes with regular quotes
+    .replace(/[""]/g, '"')
+    .replace(/['']/g, "'")
+    // Replace em/en dashes with regular dashes
+    .replace(/[—–]/g, '-')
+    // Replace ellipsis
+    .replace(/…/g, '...')
+    .trim();
 }
 
 // Check rate limits
@@ -155,6 +171,8 @@ export async function POST(request) {
 Article Title: ${title}
 Article Description: ${description || "No description available"}
 
+CRITICAL: Use only standard ASCII quotes (") and apostrophes ('). Do NOT use smart quotes or special characters.
+
 Provide your response in this EXACT JSON format (no markdown, no code blocks):
 {
   "title": "A concise 5-6 word headline",
@@ -163,9 +181,9 @@ Provide your response in this EXACT JSON format (no markdown, no code blocks):
 
 Focus on the most important facts. Be clear and direct.`;
 
-    // Use correct API pattern matching your gemini.js
+    // Use correct API pattern
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash-exp",
       contents: [
         {
           role: "user",
@@ -174,7 +192,7 @@ Focus on the most important facts. Be clear and direct.`;
       ],
     });
 
-    // Extract response text using correct pattern
+    // Extract response text
     const responseText = response.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!responseText) {
@@ -183,22 +201,40 @@ Focus on the most important facts. Be clear and direct.`;
 
     console.log("Raw Gemini response:", responseText);
 
-    // Parse JSON response
+    // Parse JSON response with sanitization and fallback
     let summary;
+    let usedFallback = false;
+
     try {
-      // Remove markdown code blocks if present
-      const cleanText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const cleanText = sanitizeJsonString(responseText);
+      console.log("Sanitized text:", cleanText);
       summary = JSON.parse(cleanText);
+
+      // Validate structure
+      if (!summary.title || !summary.content) {
+        throw new Error("Invalid summary format from AI");
+      }
     } catch (parseError) {
       console.error("Failed to parse Gemini response:", parseError);
-      throw new Error("Failed to parse AI response");
+      console.error("Raw response was:", responseText);
+
+      // FALLBACK: Create a summary from original content instead of failing
+      usedFallback = true;
+      summary = {
+        title: title.length > 50
+          ? title.substring(0, 50) + '...'
+          : title,
+        content: description
+          ? (description.length > 150
+            ? description.substring(0, 150) + '...'
+            : description)
+          : "Unable to generate AI summary. Please read the full article for details."
+      };
+
+      console.log("Using fallback summary due to parsing failure");
     }
 
-    if (!summary.title || !summary.content) {
-      throw new Error("Invalid summary format from AI");
-    }
-
-    // Cache the summary (12 hours)
+    // Cache the summary (12 hours) - even if it's a fallback
     const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000);
 
     await ArticleSummary.create({
@@ -208,12 +244,13 @@ Focus on the most important facts. Be clear and direct.`;
       expiresAt,
     });
 
-    console.log("Summary generated and cached");
+    console.log(usedFallback ? "Fallback summary cached" : "AI summary cached");
 
     return NextResponse.json({
       success: true,
       summary,
       cached: false,
+      usedFallback, // Frontend can know if this was a fallback
       rateLimitInfo,
     });
 
