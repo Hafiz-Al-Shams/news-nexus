@@ -26,7 +26,7 @@ export default function NewsCard({ article }) {
 
   return (
     <>
-      <div className="group block bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-blue-500">
+      <div className="group block bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-[#104AC2]">
         {/* Image */}
         <div className="relative h-48 overflow-hidden bg-gray-200">
           {article.urlToImage && !imageError ? (
@@ -37,7 +37,7 @@ export default function NewsCard({ article }) {
               onError={() => setImageError(true)}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
               <svg
                 className="w-16 h-16 text-gray-400"
                 fill="none"
@@ -90,13 +90,13 @@ export default function NewsCard({ article }) {
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-[#1C3B7A] to-[#104AC2] text-white text-sm font-medium rounded-lg hover:from-[#153163] hover:to-[#0d3a9f] transition-colors text-center"
             >
               View Original
             </a>
             <button
               onClick={handleSummarizeClick}
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all text-center"
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-[#104AC2] to-[#1C3B7A] text-white text-sm font-medium rounded-lg hover:from-[#0d3a9f] hover:to-[#153163] transition-all text-center"
             >
               Summarize with AI
             </button>
@@ -113,4 +113,3 @@ export default function NewsCard({ article }) {
     </>
   );
 }
-

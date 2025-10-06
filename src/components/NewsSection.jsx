@@ -126,56 +126,27 @@ export default function NewsSection() {
         onTopicChange={(topic) => dispatch({ type: 'news/setTopicFilter', payload: topic })}
       />
 
-      {/* Action Buttons Section */}
-      <div className="space-y-4">
-        {/* 24hrs Bulletin Button - Featured */}
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-center sm:text-left">
-              <h3 className="text-xl font-bold text-gray-800 mb-2 flex items-center justify-center sm:justify-start gap-2">
-                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                AI-Generated 24hrs News Bulletin
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Get the top 12 most important news stories from the past 24 hours, prioritized and summarized by AI
-              </p>
-            </div>
-            <button
-              onClick={handleBulletinClick}
-              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl font-semibold text-lg flex items-center justify-center gap-3 whitespace-nowrap"
-            >
+      {/* Regular News Fetch Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={fetchGuardianNews}
+          disabled={guardianLoading}
+          className="px-8 py-4 bg-gradient-to-r from-[#1C3B7A] to-[#104AC2] text-white rounded-lg hover:from-[#153163] hover:to-[#0d3a9f] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl font-semibold text-lg flex items-center justify-center gap-3 min-w-[240px]"
+        >
+          {guardianLoading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Loading...
+            </>
+          ) : (
+            <>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              View Bulletin
-            </button>
-          </div>
-        </div>
-
-        {/* Regular News Fetch Button */}
-        <div className="flex justify-center">
-          <button
-            onClick={fetchGuardianNews}
-            disabled={guardianLoading}
-            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl font-semibold text-lg flex items-center justify-center gap-3 min-w-[240px]"
-          >
-            {guardianLoading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Loading...
-              </>
-            ) : (
-              <>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Get The News
-              </>
-            )}
-          </button>
-        </div>
+              Get The News
+            </>
+          )}
+        </button>
       </div>
 
       {/* Active Source Indicator */}
@@ -183,7 +154,7 @@ export default function NewsSection() {
         <div className="flex justify-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm">
             <span className="text-gray-600">Showing news from:</span>
-            <span className={`font-semibold ${activeSource === 'guardian' ? 'text-purple-600' : 'text-blue-600'}`}>
+            <span className={`font-semibold ${activeSource === 'guardian' ? 'text-[#104AC2]' : 'text-[#1C3B7A]'}`}>
               {activeSource === 'guardian' ? 'The Guardian' : 'NewsAPI'}
             </span>
           </div>
@@ -193,7 +164,7 @@ export default function NewsSection() {
       {/* Loading State */}
       {currentLoading && (
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="inline-block w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div className="inline-block w-16 h-16 border-4 border-[#104AC2] border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-gray-600 text-lg">Loading news from {activeSource === 'guardian' ? 'Guardian' : 'NewsAPI'}...</p>
         </div>
       )}
@@ -224,7 +195,7 @@ export default function NewsSection() {
             </p>
             <button
               onClick={activeSource === 'guardian' ? fetchGuardianNews : fetchNewsAPINews}
-              className="px-4 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2"
+              className="px-4 py-2 text-sm text-[#104AC2] hover:text-[#1C3B7A] hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -251,7 +222,7 @@ export default function NewsSection() {
           <p className="text-gray-500 mb-4">Try adjusting your filters or check back later</p>
           <button
             onClick={activeSource === 'guardian' ? fetchGuardianNews : fetchNewsAPINews}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-6 py-2 bg-gradient-to-r from-[#1C3B7A] to-[#104AC2] text-white rounded-lg hover:from-[#153163] hover:to-[#0d3a9f] transition-colors"
           >
             Refresh News
           </button>

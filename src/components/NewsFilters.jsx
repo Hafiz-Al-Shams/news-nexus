@@ -43,7 +43,7 @@ export default function NewsFilters({
               onClick={() => onTimeChange(t.value)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTime === t.value
-                  ? "bg-blue-600 text-white shadow-md"
+                  ? "bg-gradient-to-r from-[#1C3B7A] to-[#104AC2] text-white shadow-md"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -65,7 +65,7 @@ export default function NewsFilters({
               onClick={() => onTopicChange(topic.value)}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTopic === topic.value
-                  ? "bg-blue-600 text-white shadow-md"
+                  ? "bg-gradient-to-r from-[#1C3B7A] to-[#104AC2] text-white shadow-md"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
