@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-export default function LeftSidebar() {
+export default function LeftSidebar({ isDrawerMode = false, onLinkClick }) {
   const router = useRouter();
   const { data: session } = useSession();
   const dispatch = useDispatch();
@@ -21,6 +21,7 @@ export default function LeftSidebar() {
       dispatch(reduxLogout());
       await signOut({ callbackUrl: "/" });
       toast.success("Logged out successfully");
+      if (onLinkClick) onLinkClick();
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Failed to logout");
@@ -35,6 +36,11 @@ export default function LeftSidebar() {
     } else {
       router.push("/bulletins/24hrs");
     }
+    if (onLinkClick) onLinkClick();
+  };
+
+  const handleAssistantClick = () => {
+    if (onLinkClick) onLinkClick();
   };
 
   return (
@@ -69,6 +75,7 @@ export default function LeftSidebar() {
       <div className="px-4 py-4">
         <Link
           href="/chat-with-ai"
+          onClick={handleAssistantClick}
           className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm flex items-center gap-3 text-gray-700"
         >
           <svg className="w-5 h-5 text-[#104AC2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,46 +85,64 @@ export default function LeftSidebar() {
         </Link>
       </div>
 
-      {/* Sign In Button or Profile Section */}
-      {isAuthenticated && user ? (
+      {/* Drawer Mode: Subscribe Newsletter Button */}
+      {isDrawerMode ? (
         <>
           <div className="border-t border-gray-200"></div>
           <div className="px-4 py-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Profile</p>
-            <div className="border-t border-gray-200 pt-3">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 font-bold text-sm">
-                  {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 truncate">
-                    {user.name || "User"}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                </div>
-              </div>
-              <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                className="w-full px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
-              >
-                {isLoggingOut ? "Logging out..." : "Logout"}
-              </button>
-            </div>
+            <button className="w-full px-6 py-3 bg-[#666666] text-white rounded-lg hover:bg-[#555555] transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+              Subscribe to Our Newsletter
+            </button>
+            <p className="text-xs text-gray-500 text-center mt-2">
+              Get daily news updates
+            </p>
           </div>
           <div className="border-t border-gray-200"></div>
         </>
       ) : (
+        /* Desktop/Tablet Mode: Sign In Button or Profile Section */
         <>
-          <div className="px-4 py-4">
-            <Link
-              href="/login"
-              className="block w-full px-4 py-3 bg-[#666666] text-white rounded-lg hover:bg-[#555555] transition-colors text-center text-sm font-semibold"
-            >
-              Sign In
-            </Link>
-          </div>
-          <div className="border-t border-gray-200"></div>
+          {isAuthenticated && user ? (
+            <>
+              <div className="border-t border-gray-200"></div>
+              <div className="px-4 py-4">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Profile</p>
+                <div className="border-t border-gray-200 pt-3">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 font-bold text-sm">
+                      {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 truncate">
+                        {user.name || "User"}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    className="w-full px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                  >
+                    {isLoggingOut ? "Logging out..." : "Logout"}
+                  </button>
+                </div>
+              </div>
+              <div className="border-t border-gray-200"></div>
+            </>
+          ) : (
+            <>
+              <div className="px-4 py-4">
+                <Link
+                  href="/login"
+                  className="block w-full px-4 py-3 bg-[#666666] text-white rounded-lg hover:bg-[#555555] transition-colors text-center text-sm font-semibold"
+                >
+                  Sign In
+                </Link>
+              </div>
+              <div className="border-t border-gray-200"></div>
+            </>
+          )}
         </>
       )}
 
