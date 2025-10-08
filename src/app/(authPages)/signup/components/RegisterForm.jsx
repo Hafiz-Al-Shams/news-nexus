@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import Link from "next/link";
-import { IoArrowForwardCircleOutline } from "react-icons/io5";
 import SocialLogin from "../../components/SocialLogin";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/slices/userSlice";
@@ -70,100 +69,96 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Join Us Today!</h2>
-        <p className="text-gray-500">Create your account to unlock full features.</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
+      {/* Website Name - Top Left */}
+      <Link href="/" className="absolute top-6 left-6 sm:top-8 sm:left-8">
+        <h1 className="text-xl sm:text-2xl font-bold">
+          <span className="text-gray-900">NEWS</span>
+          <span className="text-gray-500/95">NEXUS</span>
+        </h1>
+      </Link>
 
-      <form onSubmit={handleSubmit}>
-        {/* Full Name */}
-        <div className="mb-6">
-          <label htmlFor="name" className="block text-gray-700 text-sm font-medium mb-2">
-            Full Name
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            placeholder="Your Full Name"
-            required
-            disabled={isLoading}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-          />
-        </div>
+      {/* Main Form Container */}
+      <div className="w-full max-w-xl bg-white p-6 sm:p-10 lg:p-12">
+        {/* Title */}
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+          Join Us Today
+        </h2>
 
-        {/* Email */}
-        <div className="mb-6">
-          <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-2">
-            Email Address
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="your@example.com"
-            required
-            disabled={isLoading}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-          />
-        </div>
-
-        {/* Password */}
-        <div className="mb-6">
-          <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-2">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="••••••••"
-            required
-            minLength={6}
-            disabled={isLoading}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-          />
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
-        >
-          {isLoading ? "Creating account..." : "Sign Up"}
-        </button>
-      </form>
-
-      {/* Divider */}
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or</span>
-        </div>
-      </div>
-
-      <SocialLogin />
-
-      {/* Footer Links */}
-      <div className="text-center text-sm text-gray-600 mt-6">
-        <p className="mb-3">
+        {/* Subtitle */}
+        <p className="text-sm sm:text-base text-gray-600 mb-8 sm:mb-10">
           Already have an account?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline font-medium">
-            Login here
+          <Link
+            href="/login"
+            className="text-[#104AC2] hover:text-[#1C3B7A] font-medium transition-colors"
+          >
+            Sign In
           </Link>
         </p>
-        <Link
-          href="/"
-          className="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"
-        >
-          <IoArrowForwardCircleOutline className="mr-1 w-5 h-5" />
-          Go back Home
-        </Link>
+
+        <form onSubmit={handleSubmit}>
+          {/* Full Name Input */}
+          <div className="mb-5 sm:mb-6">
+            <input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="Full name"
+              required
+              disabled={isLoading}
+              className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#104AC2] focus:border-transparent disabled:opacity-50 transition-all"
+            />
+          </div>
+
+          {/* Email Input */}
+          <div className="mb-5 sm:mb-6">
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Email address"
+              required
+              disabled={isLoading}
+              className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#104AC2] focus:border-transparent disabled:opacity-50 transition-all"
+            />
+          </div>
+
+          {/* Password Input */}
+          <div className="mb-6 sm:mb-8">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Password"
+              required
+              minLength={6}
+              disabled={isLoading}
+              className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#104AC2] focus:border-transparent disabled:opacity-50 transition-all"
+            />
+          </div>
+
+          {/* Sign Up Button */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-[#104AC2] to-[#1C3B7A] hover:from-[#0d3da3] hover:to-[#152f61] text-white font-semibold py-3 sm:py-4 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mb-6 sm:mb-8 text-sm sm:text-base shadow-md hover:shadow-lg"
+          >
+            {isLoading ? "Creating account..." : "Sign Up"}
+          </button>
+        </form>
+
+        {/* Divider */}
+        <div className="relative mb-6 sm:mb-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200"></div>
+          </div>
+          <div className="relative flex justify-center text-xs sm:text-sm">
+            <span className="px-4 bg-white text-gray-500">or</span>
+          </div>
+        </div>
+
+        {/* Social Login */}
+        <SocialLogin />
       </div>
     </div>
   );
