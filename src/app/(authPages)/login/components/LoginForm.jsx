@@ -29,7 +29,7 @@ export default function LoginForm() {
     const password = form.password.value;
 
     setIsLoading(true);
-    toast.loading("Logging in...");
+    toast.loading("Signing in...");
 
     try {
       const response = await signIn("credentials", {
@@ -41,7 +41,7 @@ export default function LoginForm() {
       toast.dismiss();
 
       if (response?.ok) {
-        toast.success("Logged in successfully!");
+        toast.success("Signed in successfully!");
         router.push("/");
         form.reset();
       } else {
