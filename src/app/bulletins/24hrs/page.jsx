@@ -210,9 +210,34 @@ export default function Bulletin24HrsPage() {
                         {!showDetails && (
                             <div className="max-w-4xl mx-auto space-y-6">
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
-                                    <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+                                    {/* Title */}
+                                    <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                                         Quick Summary
                                     </h3>
+
+                                    {/* Subtitle */}
+                                    <p className="text-sm sm:text-base text-gray-600 mb-2">
+                                        AI Prioritized Top News Today
+                                    </p>
+
+                                    {/* Timestamp */}
+                                    {bulletin.cachedAt && (
+                                        <p className="text-xs sm:text-sm text-gray-700 italic mb-6">
+                                            Last Updated at {new Date(bulletin.cachedAt).toLocaleDateString('en-US', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric',
+                                                timeZone: 'UTC'
+                                            })}, {new Date(bulletin.cachedAt).toLocaleTimeString('en-US', {
+                                                hour: 'numeric',
+                                                minute: '2-digit',
+                                                hour12: true,
+                                                timeZone: 'UTC',
+                                                timeZoneName: 'short'
+                                            })}
+                                        </p>
+                                    )}
+
                                     <div className="space-y-4">
                                         {bulletin.bullets.map((bullet, index) => (
                                             <div key={index} className="flex gap-4 items-start">
